@@ -18,11 +18,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
-          cache: gradle
+          # Do not enable Gradle cache here: the starter ZIP has no Gradle Wrapper yet.
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -32,7 +32,8 @@ jobs:
       - name: Unpack Android project
         run: |
           unzip -q PramanaLauncher-project.zip -d project
-          ls -la project
+          test -f project/settings.gradle.kts
+          test -f project/app/build.gradle.kts
 
       - name: Build debug APK
         working-directory: project
@@ -44,4 +45,3 @@ jobs:
           name: PramanaLauncher-debug-apk
           path: project/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-          
