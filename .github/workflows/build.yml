@@ -1,0 +1,47 @@
+name: Build Pramana Launcher APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "PramanaLauncher-project.zip"
+      - ".github/workflows/build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Unpack Android project
+        run: |
+          unzip -q PramanaLauncher-project.zip -d project
+          ls -la project
+
+      - name: Build debug APK
+        working-directory: project
+        run: gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PramanaLauncher-debug-apk
+          path: project/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          
