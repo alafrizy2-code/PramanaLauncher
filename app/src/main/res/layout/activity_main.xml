@@ -1,23 +1,53 @@
-<TextClock
-    android:id="@+id/jamGede"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:format24Hour="HH:mm"
-    android:format12Hour="hh:mm"
-    android:textSize="68sp"
-    android:textStyle="bold"
-    android:textColor="#FFFFFF"
-    android:shadowColor="#99000000"
-    android:shadowRadius="12"
-    android:layout_centerInParent="true" />
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
 
-<TextClock
-    android:id="@+id/tanggalGede"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:format24Hour="EEEE, dd MMMM yyyy"
-    android:textSize="18sp"
-    android:textColor="#E0E0E0"
-    android:layout_below="@id/jamGede"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="12dp" />
+    <!-- WALLPAPER FOTO KELUARGA -->
+    <ImageView
+        android:id="@+id/wallpaperImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <!-- JAM GEDE DI TENGAH - GANTI TULISAN TADI -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextClock
+            android:id="@+id/jamGede"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format24Hour="HH:mm"
+            android:format12Hour="hh:mm a"
+            android:textSize="72sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:shadowColor="#99000000"
+            android:shadowRadius="12"
+            android:layout_centerInParent="true" />
+
+        <TextClock
+            android:id="@+id/tanggalGede"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format24Hour="EEEE, dd MMMM yyyy"
+            android:textSize="18sp"
+            android:textColor="#E0E0E0"
+            android:layout_below="@id/jamGede"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp" />
+
+    </RelativeLayout>
+
+    <!-- TEMPAT APP LIST BIAR GAK ERROR BUILD -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/appsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:visibility="gone" />
+
+</FrameLayout>
