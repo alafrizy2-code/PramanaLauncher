@@ -34,7 +34,7 @@ jobs:
           unzip -q PramanaLauncher-project.zip -d project
           test -f project/settings.gradle.kts
           test -f project/app/build.gradle.kts
-
+          cp app/src/main/res/layout/activity_main.xml project/app/src/main/res/layout/activity_main.xml || true
       - name: Build debug APK
         working-directory: project
         run: gradle assembleDebug
