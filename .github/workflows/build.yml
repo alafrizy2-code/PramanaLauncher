@@ -1,65 +1,38 @@
 name: Build Pramana Launcher APK
-
 on:
   workflow_dispatch:
   push:
     paths:
       - "PramanaLauncher-project.zip"
       - ".github/workflows/build.yml"
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
-          # Do not enable Gradle cache here: the starter ZIP has no Gradle Wrapper yet.
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
-
       - name: Unpack Android project
         run: |
           unzip -q PramanaLauncher-project.zip -d project
           test -f project/settings.gradle.kts
           test -f project/app/build.gradle.kts
-          cat > project/app/src/main/res/layout/activity_main.xml <<'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#0A0E9B">
-    <ImageView android:id="@+id/wallpaperView" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
-        <TextView android:layout_width="match_parent" android:layout_height="40dp" android:text="PRAMANA LAUNCHER" android:textColor="#FFFFFF" android:gravity="center_vertical" android:paddingStart="24dp" android:textStyle="bold" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
-            <androidx.recyclerview.widget.RecyclerView android:id="@+id/leftMenu" android:layout_width="280dp" android:layout_height="match_parent" />
-            <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:orientation="vertical" android:gravity="center">
-                    <TextView android:id="@+id/clockView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="14:32" android:textSize="72sp" android:textColor="#FFFFFF" android:textStyle="bold" />
-                    <TextView android:id="@+id/dateView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Minggu, 25 Oktober" android:textSize="18sp" android:textColor="#FFFFFF" android:layout_marginTop="8dp" />
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-    </LinearLayout>
-</FrameLayout>
-EOF
-    pp/src/main/res/layout/activity_main.xml project/app/src/rue
+      - name: Force fix layout with clock
+        run: |
+          python3 -c "import base64; data=b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPEZyYW1lTGF5b3V0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCIKICAgIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJtYXRjaF9wYXJlbnQiCiAgICBhbmRyb2lkOmxheW91dF9oZWlnaHQ9Im1hdGNoX3BhcmVudCIKICAgIGFuZHJvaWQ6YmFja2dyb3VuZD0iIzBBMEU5QiI+CiAgICA8SW1hZ2VWaWV3IGFuZHJvaWQ6aWQ9IkAraWQvd2FsbHBhcGVyVmlldyIgYW5kcm9pZDpsYXlvdXRfd2lkdGg9Im1hdGNoX3BhcmVudCIgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSJtYXRjaF9wYXJlbnQiIGFuZHJvaWQ6c2NhbGVUeXBlPSJjZW50ZXJDcm9wIiAvPgogICAgPExpbmVhckxheW91dCBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IiBhbmRyb2lkOmxheW91dF9oZWlnaHQ9Im1hdGNoX3BhcmVudCIgYW5kcm9pZDpvcmllbnRhdGlvbj0idmVydGljYWwiPgogICAgICAgIDxUZXh0VmlldyBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IiBhbmRyb2lkOmxheW91dF9oZWlnaHQ9IjQwZHAiIGFuZHJvaWQ6dGV4dD0iUFJBTUFOQSBMQVVOQ0hFUiIgYW5kcm9pZDp0ZXh0Q29sb3I9IiNGRkZGRkYiIGFuZHJvaWQ6Z3Jhdml0eT0iY2VudGVyX3ZlcnRpY2FsIiBhbmRyb2lkOnBhZGRpbmdTdGFydD0iMjRkcCIgYW5kcm9pZDp0ZXh0U3R5bGU9ImJvbGQiIC8+CiAgICAgICAgPExpbmVhckxheW91dCBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IiBhbmRyb2lkOmxheW91dF9oZWlnaHQ9IjBkcCIgYW5kcm9pZDpsYXlvdXRfd2VpZ2h0PSIxIiBhbmRyb2lkOm9yaWVudGF0aW9uPSJob3Jpem9udGFsIj4KICAgICAgICAgICAgPGFuZHJvaWR4LnJlY3ljbGVydmlldy53aWRnZXQuUmVjeWNsZXJWaWV3IGFuZHJvaWQ6aWQ9IkAraWQvbGVmdE1lbnUiIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSIyODBkcCIgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSJtYXRjaF9wYXJlbnQiIC8+CiAgICAgICAgICAgIDxGcmFtZUxheW91dCBhbmRyb2lkOmxheW91dF93aWR0aD0iMGRwIiBhbmRyb2lkOmxheW91dF9oZWlnaHQ9Im1hdGNoX3BhcmVudCIgYW5kcm9pZDpsYXlvdXRfd2VpZ2h0PSIxIj4KICAgICAgICAgICAgICAgIDxMaW5lYXJMYXlvdXQgYW5kcm9pZDpsYXlvdXRfd2lkdGg9IndyYXBfY29udGVudCIgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSJ3cmFwX2NvbnRlbnQiIGFuZHJvaWQ6bGF5b3V0X2dyYXZpdHk9ImNlbnRlciIgYW5kcm9pZDpvcmllbnRhdGlvbj0idmVydGljYWwiIGFuZHJvaWQ6Z3Jhdml0eT0iY2VudGVyIj4KICAgICAgICAgICAgICAgICAgICA8VGV4dFZpZXcgYW5kcm9pZDppZD0iQCtpZC9jbG9ja1ZpZXciIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJ3cmFwX2NvbnRlbnQiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0id3JhcF9jb250ZW50IiBhbmRyb2lkOnRleHQ9IjE0OjMyIiBhbmRyb2lkOnRleHRTaXplPSI3MnNwIiBhbmRyb2lkOnRleHRDb2xvcj0iI0ZGRkZGRiIgYW5kcm9pZDp0ZXh0U3R5bGU9ImJvbGQiIC8+CiAgICAgICAgICAgICAgICAgICAgPFRleHRWaWV3IGFuZHJvaWQ6aWQ9IkAraWQvZGF0ZVZpZXciIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJ3cmFwX2NvbnRlbnQiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0id3JhcF9jb250ZW50IiBhbmRyb2lkOnRleHQ9Ik1pbmdndSwgMjUgT2t0b2JlciIgYW5kcm9pZDp0ZXh0U2l6ZT0iMThzcCIgYW5kcm9pZDp0ZXh0Q29sb3I9IiNGRkZGRkYiIGFuZHJvaWQ6bGF5b3V0X21hcmdpblRvcD0iOGRwIiAvPgogICAgICAgICAgICAgICAgPC9MaW5lYXJMYXlvdXQ+CiAgICAgICAgICAgIDwvRnJhbWVMYXlvdXQ+CiAgICAgICAgPC9MaW5lYXJMYXlvdXQ+CiAgICA8L0xpbmVhckxheW91dD4KPC9GcmFtZUxheW91dD4K'; open('project/app/src/main/res/layout/activity_main.xml','wb').write(base64.b64decode(data))"
       - name: Build debug APK
         working-directory: project
         run: gradle assembleDebug
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
